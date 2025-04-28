@@ -2,10 +2,10 @@ import { useState } from "react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 
-// Cache-busting update - 2025-04-25 (v3)
+// Cache-busting update - 2025-04-28 (v4)
 
 // Elon's fortune in dollars
-const ELON_FORTUNE = 354000000000;
+const ELON_FORTUNE = 330000000000;
 
 // Product data
 const PRODUCTS = [
@@ -327,14 +327,14 @@ function App() {
       <header className="py-6 flex flex-col items-center gap-2 bg-white shadow-md mb-6 sticky top-0 z-10">
         <img
           className="w-24 md:w-32 rounded-full border-4 border-zinc-200 mb-1"
-          src="images/elon-new.png"
+          src="images/elon-sunglasses.jpg"
           alt="Elon Musk with sunglasses"
         />
         <h1 className="text-2xl md:text-4xl font-bold text-zinc-800">
           Spend Elon's Cash
         </h1>
         <p className="text-zinc-600 text-base md:text-xl px-4 text-center">
-          If Elon cashed out all of his stocks & assets today he would have approximately {formatMoney(ELON_FORTUNE)}. Can you burn it all?
+          If Elon cashed out all of his stocks & assets today he would have approximately {formatMoney(ELON_FORTUNE)} in his bank. Can you burn it all?
         </p>
 
         {/* Progress bar */}
