@@ -1,0 +1,23 @@
+[build]
+  command = "npm run build"
+  publish = "dist"
+
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
+
+[images]
+  remote_images = [
+    "https://source.unsplash.com/.*",
+    "https://images.unsplash.com/.*",
+    "https://ext.same-assets.com/.*",
+    "https://ugc.same-assets.com/.*",
+    "https://www.boeing.com/.*",
+    "https://cdn.motor1.com/.*",
+    "https://upload.wikimedia.org/.*",
+    "https://learncalifornia.org/.*",
+    "https://i0.wp.com/.*",
+    "https://www.formulanerds.com/.*",
+    "https://i0.wp.com/www.formulanerds.com/.*"
+  ]

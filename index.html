@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/money.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Spend Elon's Money | Billionaire Spending Simulator</title>
+    <meta name="description" content="Think you could spend Elon Musk's fortune? Try your hand at this humorous spending simulator and see if you can burn through billions!" />
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <style>
+      .card {
+        border-radius: 0.5rem;
+        background-color: white;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24);
+        transition: all 0.3s;
+      }
+      .card:hover {
+        box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.23);
+      }
+      .btn {
+        display: inline-flex;
+        justify-content: center;
+        align-items: center;
+        border-radius: 9999px;
+        font-weight: 500;
+        transition: all 0.15s;
+        padding: 0;
+        width: 32px;
+        height: 32px;
+        cursor: pointer;
+      }
+      .btn-outline {
+        background-color: transparent;
+        border: 1px solid #d1d5db;
+        color: #374151;
+      }
+      .btn-outline:hover:not(:disabled) {
+        background-color: #f3f4f6;
+      }
+      .btn-primary {
+        background-color: #1f2937;
+        color: white;
+      }
+      .btn-primary:hover:not(:disabled) {
+        background-color: #111827;
+      }
+      .btn:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+      }
+      .progress-bar {
+        height: 1rem;
+        border-radius: 9999px;
+        overflow: hidden;
+        background-color: #e5e7eb;
+      }
+      .progress-bar-fill {
+        height: 100%;
+        background-color: #10b981;
+        transition: width 0.5s;
+      }
+      .product-img {
+        width: 7rem;
+        height: 7rem;
+        object-fit: cover;
+        border-radius: 0.375rem;
+        transition: transform 0.3s;
+      }
+      .product-img:hover {
+        transform: scale(1.05);
+      }
+      .grid-layout {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+        gap: 1rem;
+      }
+    </style>
+  </head>
+  <body class="bg-gray-100 min-h-screen pb-16">
+    <header class="py-6 flex flex-col items-center gap-2 bg-white shadow-md mb-6 sticky top-0 z-10">
+      <img
+        class="w-16 md:w-20 rounded-full border-4 border-gray-200 mb-1"
+        src="https://ext.same-assets.com/2402936821/1239205000.jpeg"
+        alt="Elon Musk caricature"
+      />
+      <h1 class="text-2xl md:text-4xl font-bold text-gray-800">
+        Spend Elon's Fortune
+      </h1>
+      <p class="text-gray-600 text-base md:text-xl px-4 text-center">
+        Can you burn through $245,000,000,000?
+      </p>
+
+      <!-- Progress bar -->
+      <div class="w-full max-w-2xl px-4 mt-2">
+        <div class="progress-bar">
+          <div id="progress-fill" class="progress-bar-fill" style="width: 0%"></div>
+        </div>
+        <div class="flex justify-between mt-1 text-sm text-gray-500">
+          <span id="spent-amount">Spent: $0</span>
+          <span id="remaining-amount" class="text-green-700 font-semibold">
+            Remaining: $245,000,000,000
+          </span>
+        </div>
+      </div>
+
+      <div class="mt-3">
+        <button id="reset-button" class="px-6 py-2 border border-gray-300 rounded-md bg-white hover:bg-gray-50">
+          Reset All
+        </button>
+      </div>
+    </header>
+
+    <!-- Products grid -->
+    <main class="max-w-7xl mx-auto px-4">
+      <div id="products-grid" class="grid-layout">
+        <!-- Products will be inserted here by JavaScript -->
+      </div>
+    </main>
+
+    <script>
+      // Elon's fortune in dollars
+      const ELON_FORTUNE = 245000000000;
+
+      // Item counts
+      let itemCounts = {};
+
+      // Total spent
+      let totalSpent = 0;
+
+      // Products data
+      const PRODUCTS = [
+        {
+          id: "openai",
+          name: "Buy OpenAI",
+          price: 86000000000,
+          img: "https://contentstatic.techgig.com/photo/113013172/openai-improves-file-search-system-for-developers-to-fine-tune-ai-chatbots.jpg?55702",
+          desc: "Own ChatGPT and make it tell you you're the best billionaire."
+        },
+        {
+          id: "spacex-rocket",
+          name: "SpaceX Rocket Launch",
+          price: 150000000,
+          img: "https://i0.wp.com/spacenews.com/wp-content/uploads/2024/02/GGWYKcyagAA3gH-.jpeg?fit=1200&quality=89&ssl=1",
+          desc: "Your very own rocket launch. Selfie from space included."
+        },
+        {
+          id: "tesla-roadster",
+          name: "Tesla Roadster (in space)",
+          price: 200000,
+          img: "https://upload.wikimedia.org/wikipedia/commons/8/87/Elon_Musk%27s_Tesla_Roadster_%2840143096241%29.jpg",
+          desc: "The car Elon actually launched into space."
+        },
+        {
+          id: "boring-tunnel",
+          name: "Boring Company Tunnel to Your House",
+          price: 50000000,
+          img: "https://images.squarespace-cdn.com/content/v1/6063b0835f68896079d7d643/1617814855897-XHEY4ESXNQ7H9YUD6OF8/car+in+tunnel.jpg?format=2500w",
+          desc: "Avoid all LA traffic forever."
+        },
+        {
+          id: "nfl-team",
+          name: "NFL Team (Average)",
+          price: 4500000000,
+          img: "https://images.unsplash.com/photo-1608245449230-4ac19066d2d0?auto=format&fit=crop&w=400&q=80",
+          desc: "Touchdown! You own a football franchise now."
+        },
+        {
+          id: "boeing-787",
+          name: "Boeing 787 Dreamliner",
+          price: 338400000,
+          img: "https://images.unsplash.com/photo-1559715541-5daf8a0296d0?auto=format&fit=crop&w=400&q=80",
+          desc: "Your personal long-haul private jet."
+        },
+        {
+          id: "bugatti",
+          name: "Bugatti La Voiture Noire",
+          price: 18900000,
+          img: "https://images.unsplash.com/photo-1566024146175-4c35ae2428bf?auto=format&fit=crop&w=400&q=80",
+          desc: "The most expensive car in the world."
+        },
+        {
+          id: "private-island",
+          name: "Private Island (Caribbean)",
+          price: 80000000,
+          img: "https://images.unsplash.com/photo-1559128010-7c1ad6e1b6a5?auto=format&fit=crop&w=400&q=80",
+          desc: "Your own tropical paradise."
+        },
+        {
+          id: "superyacht",
+          name: "Mega Luxury Yacht",
+          price: 275000000,
+          img: "https://images.unsplash.com/photo-1544551763-77ef2d0cfc6c?auto=format&fit=crop&w=400&q=80",
+          desc: "Because boats are cool too, not just rockets."
+        },
+        {
+          id: "mansion",
+          name: "Beverly Hills Mansion",
+          price: 125000000,
+          img: "https://learncalifornia.org/wp-content/uploads/2023/12/houses-beverly-hills-1024x585.jpg",
+          desc: "A modest little 20 bedroom home."
+        },
+        {
+          id: "f1-team",
+          name: "Formula 1 Team",
+          price: 700000000,
+          img: "https://images.unsplash.com/photo-1532715088584-f5d53272cfd4?auto=format&fit=crop&w=400&q=80",
+          desc: "Zoom zoom! Racing gets expensive."
+        },
+        {
+          id: "skyscraper",
+          name: "Downtown Skyscraper",
+          price: 850000000,
+          img: "https://images.unsplash.com/photo-1479839672679-a46483c0e7c8?auto=format&fit=crop&w=400&q=80",
+          desc: "Just buy a whole building, why not?"
+        },
+        {
+          id: "college-education",
+          name: "4-Year College Education",
+          price: 250000,
+          img: "https://images.unsplash.com/photo-1523050854058-8df90110c9f1?auto=format&fit=crop&w=400&q=80",
+          desc: "Pay for someone's 4 years of tuition."
+        },
+        {
+          id: "mcdonalds-franchise",
+          name: "McDonald's Franchise",
+          price: 2200000,
+          img: "https://images.unsplash.com/photo-1552895638-f7fe08d2f7d5?auto=format&fit=crop&w=400&q=80",
+          desc: "Would you like fries with that?"
+        },
+        {
+          id: "rolex",
+          name: "Diamond-Encrusted Rolex",
+          price: 85000,
+          img: "https://images.unsplash.com/photo-1526045431048-f857369baa09?auto=format&fit=crop&w=400&q=80",
+          desc: "Never be late for space launches again."
+        }
+      ];
+
+      // Format currency helper
+      function formatMoney(amount) {
+        return new Intl.NumberFormat('en-US', {
+          style: 'currency',
+          currency: 'USD',
+          maximumFractionDigits: 0,
+        }).format(amount);
+      }
+
+      // Update the UI based on current state
+      function updateUI() {
+        // Update spent and remaining amounts
+        document.getElementById('spent-amount').textContent = `Spent: ${formatMoney(totalSpent)}`;
+
+        const remaining = ELON_FORTUNE - totalSpent;
+        const remainingElement = document.getElementById('remaining-amount');
+        remainingElement.textContent = `Remaining: ${formatMoney(remaining)}`;
+
+        // Update color of remaining based on value
+        if (remaining < 0) {
+          remainingElement.className = 'text-red-600 font-semibold';
+        } else {
+          remainingElement.className = 'text-green-700 font-semibold';
+        }
+
+        // Update progress bar
+        const progressPercent = Math.min(100, (totalSpent / ELON_FORTUNE) * 100);
+        document.getElementById('progress-fill').style.width = `${progressPercent}%`;
+
+        // Update individual product counts and button states
+        PRODUCTS.forEach(product => {
+          const countElement = document.getElementById(`count-${product.id}`);
+          const count = itemCounts[product.id] || 0;
+          countElement.textContent = count;
+
+          const sellButton = document.getElementById(`sell-${product.id}`);
+          sellButton.disabled = count === 0;
+
+          const buyButton = document.getElementById(`buy-${product.id}`);
+          buyButton.disabled = remaining < product.price;
+        });
+      }
+
+      // Buy an item
+      function buyItem(id) {
+        const product = PRODUCTS.find(p => p.id === id);
+        if (!product) return;
+
+        const remaining = ELON_FORTUNE - totalSpent;
+        if (remaining >= product.price) {
+          // Increment count
+          itemCounts[id] = (itemCounts[id] || 0) + 1;
+
+          // Update total spent
+          totalSpent += product.price;
+
+          // Update UI
+          updateUI();
+        }
+      }
+
+      // Sell an item
+      function sellItem(id) {
+        const product = PRODUCTS.find(p => p.id === id);
+        if (!product) return;
+
+        const count = itemCounts[id] || 0;
+        if (count > 0) {
+          // Decrement count
+          itemCounts[id] = count - 1;
+
+          // Update total spent
+          totalSpent -= product.price;
+
+          // Update UI
+          updateUI();
+        }
+      }
+
+      // Reset everything
+      function resetAll() {
+        itemCounts = {};
+        totalSpent = 0;
+        updateUI();
+      }
+
+      // Initialize the products grid
+      function initProductsGrid() {
+        const grid = document.getElementById('products-grid');
+
+        PRODUCTS.forEach(product => {
+          const productCard = document.createElement('div');
+          productCard.className = 'card flex flex-col items-center p-4 gap-2';
+          productCard.innerHTML = `
+            <img
+              src="${product.img}"
+              alt="${product.name}"
+              class="product-img mb-2"
+            />
+            <h2 class="text-lg font-semibold text-center">${product.name}</h2>
+            <div class="text-gray-600 text-sm mb-2 text-center">${product.desc}</div>
+            <div class="mt-auto font-bold text-gray-800">${formatMoney(product.price)}</div>
+            <div class="flex gap-3 my-2 items-center">
+              <button
+                id="sell-${product.id}"
+                class="btn btn-outline"
+                disabled
+              >-</button>
+              <span id="count-${product.id}" class="font-bold text-lg w-8 text-center">0</span>
+              <button
+                id="buy-${product.id}"
+                class="btn btn-primary"
+              >+</button>
+            </div>
+          `;
+
+          grid.appendChild(productCard);
+        });
+
+        // Add event listeners
+        PRODUCTS.forEach(product => {
+          document.getElementById(`buy-${product.id}`).addEventListener('click', () => buyItem(product.id));
+          document.getElementById(`sell-${product.id}`).addEventListener('click', () => sellItem(product.id));
+        });
+
+        // Reset button
+        document.getElementById('reset-button').addEventListener('click', resetAll);
+      }
+
+      // Initialize the app
+      document.addEventListener('DOMContentLoaded', () => {
+        initProductsGrid();
+        updateUI();
+      });
+    </script>
+  </body>
+</html>
